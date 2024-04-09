@@ -448,3 +448,119 @@ db.restaurant.aggregate([
   { $group: { _id: { month: "$month", year: "$year" }, count: { $sum: 1 } } },
   { $sort: { "_id.year": 1, "_id.month": 1 } },
 ]);
+
+//Q61 : Write a MongoDB query to find the average score for each cuisine.
+db.restaurant.aggregate([
+  { $unwind: "$grades" },
+  { $group: { _id: "$cuisine", avgScore: { $avg: "$grades.score" } } },
+]);
+
+//Q62 : Write a MongoDB query to find the highest score for each cuisine.
+db.restaurant.aggregate([
+  { $unwind: "$grades" },
+  { $group: { _id: "$cuisine", highScore: { $max: "$grades.score" } } },
+]);
+
+//Q63 : Write a MongoDB query to find the lowest score for each cuisine.
+db.restaurant.aggregate([
+  { $unwind: "$grades" },
+  { $group: { _id: "$cuisine", minScore: { $min: "$grades.score" } } },
+]);
+
+//Q64 : Write a MongoDB query to find the average score for each borough.
+db.restaurant.aggregate([
+  { $unwind: "$grades" },
+  { $group: { _id: "$borough", avgScore: { $avg: "$grades.score" } } },
+]);
+
+//Q65 : Write a MongoDB query to find the highest score for each borough.
+db.restaurant.aggregate([
+  { $unwind: "$grades" },
+  { $group: { _id: "$borough", highScore: { $max: "$grades.score" } } },
+]);
+
+//Q66 : Write a MongoDB query to find the lowest score for each borough.
+db.restaurant.aggregate([
+  { $unwind: "$grades" },
+  { $group: { _id: "$borough", minScore: { $min: "$grades.score" } } },
+]);
+
+//Q67 : Write a MongoDB query to find the name and address of the restaurants that received a grade of 'A' on a specific date.
+db.restaurant.aggregate([{ $ }]);
+
+//Q68 : Write a MongoDB query to find the name and address of the restaurants that received a grade of 'B' or 'C' on a specific date.
+
+//Q69 : Write a MongoDB query to find the name and address of the restaurants that have at least one 'A' grade and one 'B' grade.
+db.restaurant.find(
+  { $and: [{ "grades.grade": "A" }, { "grades.grade": "B" }] },
+  { _id: 0, name: 1, address: 1 }
+);
+
+//Q70 : Write a MongoDB query to find the name and address of the restaurants that have at least one 'A' grade and no 'B' grades
+db.restaurant.find(
+  { $and: [{ "grades.grade": "A" }, { "grades.grade": { $ne: "B" } }] },
+  { _id: 0, name: 1, address: 1 }
+);
+
+//Q71 : Write a MongoDB query to find the name ,address and grades of the restaurants that have at least one 'A' grade and no 'C' grades.
+db.restaurant.find(
+  { $and: [{ "grades.grade": "A" }, { "grades.grade": { $ne: "C" } }] },
+  { _id: 0, name: 1, address: 1, "grades.grade": 1 }
+);
+
+//Q72 : Write a MongoDB query to find the name, address, and grades of the restaurants that have at least one 'A' grade, no 'B' grades, and no 'C' grades.
+db.restaurant.find(
+  {
+    $and: [
+      { "grades.grade": "A" },
+      { "grades.grade": { $not: { $eq: "B" } } },
+      { "grades.grade": { $not: { $eq: "C" } } },
+    ],
+  },
+  { _id: 0, name: 1, address: 1, "grades.grade": 1 }
+);
+
+//Q73 : Write a MongoDB query to find the name and address of the restaurants that have the word 'coffee' in their name.
+db.restaurant.find(
+  { name: { $regex: /coffee/i } },
+  { _id: 0, name: 1, address: 1 }
+);
+
+//Q74 : Write a MongoDB query to find the name and address of the restaurants that have a zipcode that starts with '10'.
+db.restaurant.find(
+  { "address.zipcode": { $regex: /^10/ } },
+  { _id: 0, name: 1, address: 1 }
+);
+
+//Q75 : Write a MongoDB query to find the name and address of the restaurants that have a cuisine that starts with the letter 'B'.
+db.restaurant.find(
+  { cuisine: { $regex: /^B/i } },
+  { _id: 0, name: 1, address: 1, cuisine: 1 }
+);
+
+//Q76 : Write a MongoDB query to find the name, address, and cuisine of the restaurants that have a cuisine that ends with the letter 'y'.
+db.restaurant.find(
+  { cuisine: { $regex: /y$/i } },
+  { _id: 0, name: 1, address: 1, cuisine: 1 }
+);
+
+//Q77 : Write a MongoDB query to find the name, address, and cuisine of the restaurants that have a cuisine that contains the word 'Pizza'.
+db.restaurant.find(
+  { cuisine: { $regex: /Pizza/i } },
+  { _id: 0, name: 1, address: 1, cuisine: 1 }
+);
+
+//Q78 : Write a MongoDB query to find the restaurants achieved highest average score.
+db.restaurant.aggregate([
+  { $unwind: "$grades" },
+  { $group: { _id: "$restaurant_id", avgScore: { $avg: "$grades.score" } } },
+  { $sort: { avgScore: -1 } },
+  { $limit: 1 },
+]);
+
+//Q79 : Write a MongoDB query to find all the restaurants with the highest number of "A" grades.
+db.restaurant.aggregate([
+  { $unwind: "$grades" },
+  { $match: { "grades.grade": "A" } },
+  { $group: { _id: "restaurant_id", count: { $sum: 1 } } },
+]);
